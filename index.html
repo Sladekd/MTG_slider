@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTG FCI slider – 2026-07-15 14:30 vs 14:40 UTC</title>
+<style>
+  body { margin: 0; padding: 24px; font-family: system-ui, sans-serif; background: #111; color: #eee; }
+  h1 { font-size: 1.1rem; font-weight: 600; margin: 0 0 12px; }
+  .wrap { max-width: 874px; margin: 0 auto; }
+  .cmp { position: relative; width: 100%; user-select: none; touch-action: none; cursor: ew-resize; }
+  .cmp img { width: 100%; display: block; }
+  .cmp .top { position: absolute; inset: 0; clip-path: inset(0 50% 0 0); }
+  .cmp .bar { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fff;
+              box-shadow: 0 0 4px #000; pointer-events: none; }
+  .labels { display: flex; justify-content: space-between; font-size: .85rem; margin-top: 6px; opacity: .8; }
+  input[type=range] { width: 100%; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>FCI Cloud Phase RGB + cold tops ≤ 220 K — drag to compare</h1>
+  <div class="cmp" id="cmp">
+    <img src="images/img1.png" alt="14:30 UTC">
+    <img class="top" src="images/img2.png" alt="14:40 UTC">
+    <div class="bar"></div>
+  </div>
+  <input type="range" id="r" min="0" max="100" value="50" step="0.1">
+  <div class="labels"><span>◀ 14:40 UTC</span><span>14:30 UTC ▶</span></div>
+</div>
+<script>
+  const cmp = document.getElementById("cmp"), topImg = cmp.querySelector('.top'),
+        bar = cmp.querySelector('.bar'), r = document.getElementById('r');
+  function set(v) {
+    v = Math.max(0, Math.min(100, v));
+    topImg.style.clipPath = 'inset(0 ' + (100 - v) + '% 0 0)';
+    bar.style.left = v + '%';
+    r.value = v;
+  }
+  r.addEventListener('input', () => set(+r.value));
+  const fromEvent = e => { const b = cmp.getBoundingClientRect(); set((e.clientX - b.left) / b.width * 100); };
+  cmp.addEventListener('pointerdown', e => { cmp.setPointerCapture(e.pointerId); fromEvent(e); });
+  cmp.addEventListener('pointermove', e => { if (e.buttons || e.pointerType === 'mouse') fromEvent(e); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') set(+r.value - 2);
+    if (e.key === 'ArrowRight') set(+r.value + 2);
+  });
+</script>
+</body>
+</html>
